@@ -19,6 +19,4 @@ void setupUi()
 
 	appsTile = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
 	setupApps();
-
-	setupSettingPanel();
 }

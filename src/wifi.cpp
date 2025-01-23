@@ -36,7 +36,7 @@ void setupWifi()
 {
 	registerEventHandlers();
 
-	if (SPIFFS.exists("/wifi-network.json")) {
+	/*if (SPIFFS.exists("/wifi-network.json")) {
 		auto network = wifiNetworkSetting.get("");
 		for (auto i = 0; i < network.length(); i++) {
 			auto n = network[i];
@@ -47,11 +47,17 @@ void setupWifi()
 				}
 			);
 		}
-	}
+	}*/	
+	wifiNetwork.push_back(
+				WifiNetwork{
+					.ssid = "Iu PublicNet",
+					.password = ""
+				}
+	);
 
-	auto wifi = setting.get(".wifi");
-	wifiSetting.network = (String)wifi["network"];
-	wifiSetting.enabled = (bool)wifi["enabled"];
+	
+	wifiSetting.network = "IU PublicNet";
+	wifiSetting.enabled = true;
 	if (wifiSetting.enabled) {
 		auto network = std::find_if(wifiNetwork.begin(), wifiNetwork.end(), [=](const WifiNetwork &network) { return network.ssid == wifiSetting.network; });
 		WiFi.begin(network->ssid, network->password);

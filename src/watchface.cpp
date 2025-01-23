@@ -79,7 +79,7 @@ void watchfaceHandler()
 {
 	auto now = millis();
 
-	if (now - timeLastUpdateTime >= 1000) {
+	if (now - timeLastUpdateTime >= 500) {
 		updateTime();
 		timeLastUpdateTime = now;
 	}
@@ -93,7 +93,11 @@ void updateTime()
 		return;
 	}
 	char s[16];
-	strftime(s, 16, "%X", &timeinfo);
+	strftime(s, 16, "%I:%M%p", &timeinfo);
+	//remove leading 0
+	if (s[0] == '0') {
+		s[0] = ' ';
+	}
 	lv_label_set_text(timeLabel, s);
 	strftime(s, 16, "%a %x", &timeinfo);
 	lv_label_set_text(dateLabel, s);

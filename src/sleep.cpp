@@ -14,7 +14,7 @@ void setDisableSleep(bool value) {
 }
 
 void setupSleep() {
-	setDisableSleep((bool)setting.get(".disableSleep"));
+	setDisableSleep(false);
 }
 
 void sleepHandler() {

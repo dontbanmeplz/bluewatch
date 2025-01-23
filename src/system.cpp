@@ -17,7 +17,8 @@ void setupSystem()
 
 	auto batteryBtn = lv_list_add_btn(list, LV_SYMBOL_BATTERY_FULL, "Battery");
 	lv_obj_add_event_cb(batteryBtn, [](lv_event_t *e) { enterApp(&batteryApp); }, LV_EVENT_CLICKED, nullptr);
-}
+
+	}
 
 extern lv_obj_t *tileview, *systemTile;
 static lv_obj_t *appTile;

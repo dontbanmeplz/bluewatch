@@ -2,14 +2,23 @@
 #include <duktape.h>
 #include "setting.h"
 #include "json.h"
-
+#include "filesystem.h"
 Setting::Setting(const char *file) : file(file) {}
 
 Json Setting::get(const char *path) {
+	if (path == nullptr) {
+        // Add logging to identify the issue
+        Serial.println("[ERROR] Null key provided to Setting::get");
+        abort();
+    }
+
+    // Check for valid key before proceeding
+    Serial.printf("Key '%s' \n", path);
 	auto ctx = duk_create_heap_default();
-	auto file = SPIFFS.open(this->file);
+	auto file = SPIFFS.open("/setting.json");
 	auto content = file.readString();
 	file.close();
+	Serial.printf("'%s' \n", content);
 	duk_eval_string(ctx, ("(" + content + path + ")").c_str());
 	Json value = pop(ctx);
 	duk_destroy_heap(ctx);

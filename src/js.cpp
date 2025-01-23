@@ -1,7 +1,7 @@
 #include <LilyGoLib.h>
 #include <duktape.h>
 #include <duktape_lvgl.h>
-#include <DuktapeWatch.h>
+#include "DuktapeWatch/DuktapeWatch.h"
 #include <duktape_bluewatch.h>
 #include <SPIFFS.h>
 

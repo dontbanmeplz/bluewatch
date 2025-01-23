@@ -1,1 +1,1 @@
-void setupSettingPanel();
+void setupSettingPanel(lv_obj_t *tile);
