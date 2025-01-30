@@ -736,4 +736,5 @@
  /Users/chriss/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/nghttp/port/include/http_parser.h \
  /Users/chriss/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src/Uri.h \
  /Users/chriss/.platformio/packages/framework-arduinoespressif32/libraries/WebServer/src/detail/RequestHandler.h \
- src/filesystem.h src/event.h src/settingPanel.h src/setting.h src/json.h
+ src/filesystem.h src/event.h src/settingPanel.h src/setting.h src/json.h \
+ src/sensor.h
