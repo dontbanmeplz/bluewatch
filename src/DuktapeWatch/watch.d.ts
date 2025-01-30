@@ -5,3 +5,4 @@ declare function getBrightness(): number;
 declare function setBrightness(value: number): void;
 declare function getAccelerometer(): { x: number, y: number, z: number } | null;
 declare function http(method: string, url: string, payload?: string): { code: number, body: string };
+declare function refapps(): void;

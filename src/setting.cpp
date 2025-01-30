@@ -2,7 +2,6 @@
 #include <duktape.h>
 #include "setting.h"
 #include "json.h"
-#include "filesystem.h"
 Setting::Setting(const char *file) : file(file) {}
 
 Json Setting::get(const char *path) {
@@ -15,17 +14,27 @@ Json Setting::get(const char *path) {
     // Check for valid key before proceeding
     Serial.printf("Key '%s' \n", path);
 	auto ctx = duk_create_heap_default();
-	auto file = SPIFFS.open("/setting.json");
+	auto file = SPIFFS.open(this->file);
 	auto content = file.readString();
 	file.close();
-	Serial.printf("'%s' \n", content);
-	duk_eval_string(ctx, ("(" + content + path + ")").c_str());
+	Serial.println("Content: " + String(content));
+	Serial.println("Path: " + String(path));
+
+	//fix this shit whatever the fuck it is
+	String jsCode = "(" + content + path + ")";
+	Serial.println("JavaScript Code: " + jsCode);
+	duk_eval_string(ctx, jsCode.c_str());
+	//duk_eval_string(ctx, ("(" + content + path + ")").c_str());
 	Json value = pop(ctx);
 	duk_destroy_heap(ctx);
 	return value;
 }
-
 void Setting::set(const char *path, Json value) {
+	if (path == nullptr) {
+        // Add logging to identify the issue
+        Serial.println("[ERROR] Null key provided to Setting::get");
+        abort();
+    }
 	auto ctx = duk_create_heap_default();
 	auto file = SPIFFS.open(this->file);
 	auto content = file.readString();

@@ -3,10 +3,10 @@
 #include "system.h"
 #include "apps.h"
 #include "settingPanel.h"
-
+#include <duktape.h>
 lv_obj_t *tileview, *watchfaceTile, *systemTile, *appsTile;
 
-void setupUi()
+void setupUi(duk_context *ctx)
 {
 	tileview = lv_tileview_create(lv_scr_act());
 	lv_obj_set_scrollbar_mode(tileview, LV_SCROLLBAR_MODE_OFF);
@@ -18,5 +18,5 @@ void setupUi()
 	setupSystem();
 
 	appsTile = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR);
-	setupApps();
+	setupApps(ctx);
 }

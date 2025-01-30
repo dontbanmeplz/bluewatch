@@ -17,5 +17,6 @@
         "bitset": "cpp",
         "ctime": "cpp",
         "deque": "cpp"
-    }
+    },
+    "search.useIgnoreFiles": false
 }

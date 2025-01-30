@@ -17,9 +17,8 @@ static duk_ret_t js_writeFile(duk_context *ctx) {
 	auto s = duk_get_string(ctx, 1);
 
 	auto file = SPIFFS.open(path, "w");
-	auto n = file.write((uint8_t *)s, strlen(s));
+	file.println(s);
 	file.close();
-	duk_push_uint(ctx, n);
 
 	return 1;
 }

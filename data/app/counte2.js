@@ -2,7 +2,7 @@ counter = 0;
 
 label = lv_label_create(appTile);
 lv_obj_set_align(label, LV_ALIGN_CENTER);
-lv_label_set_text(label, "ITS 2: 0");
+lv_label_set_text(label, "ITS 22: 0");
 
 btn = lv_btn_create(appTile);
 lv_obj_set_align(btn, LV_ALIGN_BOTTOM_MID);

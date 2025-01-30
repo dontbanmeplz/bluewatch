@@ -36,31 +36,41 @@ void setupWifi()
 {
 	registerEventHandlers();
 
-	/*if (SPIFFS.exists("/wifi-network.json")) {
+	if (SPIFFS.exists("/wifi-network.json")) {
 		auto network = wifiNetworkSetting.get("");
+		Serial.println("wifi network count: " + String(network.length()));
 		for (auto i = 0; i < network.length(); i++) {
+			Serial.println("got network " + String(i));
 			auto n = network[i];
+			Serial.println("1");
 			wifiNetwork.push_back(
 				WifiNetwork{
 					.ssid = (String)n["ssid"],
 					.password = (String)n["password"]
 				}
 			);
+			Serial.println("2");
 		}
-	}*/	
-	wifiNetwork.push_back(
-				WifiNetwork{
-					.ssid = "Iu PublicNet",
-					.password = ""
-				}
-	);
-
-	
-	wifiSetting.network = "IU PublicNet";
-	wifiSetting.enabled = true;
+	}
+	Serial.println("got networks");
+	auto wifi = setting.get(".wifi");
+	wifiSetting.network = (String)wifi["network"];
+	wifiSetting.enabled = (bool)wifi["enabled"];
+	Serial.println("wifi enabled: " + String(wifiSetting.enabled));
 	if (wifiSetting.enabled) {
-		auto network = std::find_if(wifiNetwork.begin(), wifiNetwork.end(), [=](const WifiNetwork &network) { return network.ssid == wifiSetting.network; });
+		Serial.println("Connecting to WiFi network: " + wifiSetting.network);
+		for (auto &network : wifiNetwork) {
+			Serial.println("Network: " + String(network.ssid));
+			if (network.ssid == wifiSetting.network) {
+				Serial.println("Network found: " + String(network.ssid));
+				WiFi.begin(network.ssid, network.password);
+				esp_event_post(BLUEWATCH_EVENTS, BLUEWATCH_EVENT_WIFI_CONNECTING, nullptr, 0, 0);
+				break;
+			}
+		}
+		/*Serial.println("Network found: " + String(network->ssid));
 		WiFi.begin(network->ssid, network->password);
-		esp_event_post(BLUEWATCH_EVENTS, BLUEWATCH_EVENT_WIFI_CONNECTING, nullptr, 0, 0);
+		esp_event_post(BLUEWATCH_EVENTS, BLUEWATCH_EVENT_WIFI_CONNECTING, nullptr, 0, 0);*/
+
 	}
 }

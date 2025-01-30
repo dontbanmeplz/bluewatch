@@ -1,6 +1,5 @@
 #include <LilyGoLib.h>
 #include <duktape.h>
-#include "../apps.h"
 static duk_ret_t js_print(duk_context *ctx) {
 	duk_push_string(ctx, " ");
 	duk_insert(ctx, 0);
@@ -8,10 +7,8 @@ static duk_ret_t js_print(duk_context *ctx) {
 	Serial.print(duk_to_string(ctx, -1));
 	return 0;
 }
-static duk_ret_t js_refapps(duk_context *ctx) {
-	loadApps();
-	return 0;
-}
+
+
 static duk_ret_t js_vibrate(duk_context *ctx) {
 	watch.setWaveform(0, 14);
 	watch.run();
@@ -64,8 +61,6 @@ void duktape_watch_install(duk_context *ctx) {
 	duk_put_global_string(ctx, "setBrightness");
 	duk_push_c_function(ctx, js_getAccelerometer, 0);
 	duk_put_global_string(ctx, "getAccelerometer");
-	duk_push_c_function(ctx, js_refapps, 0);
-	duk_put_global_string(ctx, "refapps");
 	void duktape_watch_install_http(duk_context *ctx);
 	duktape_watch_install_http(ctx);
 	void duktape_watch_install_websocket(duk_context *ctx);
@@ -78,4 +73,6 @@ void duktape_watch_install(duk_context *ctx) {
 	duktape_watch_install_fs(ctx);
 	void duktape_watch_install_motor(duk_context *ctx);
 	duktape_watch_install_motor(ctx);
+	void duktape_watch_install_lights(duk_context *ctx);
+	duktape_watch_install_lights(ctx);
 }

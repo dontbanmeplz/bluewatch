@@ -8,31 +8,18 @@
 #include "Modal.h"
 #include <tuple>
 #include <utility>
-#include "system.h"
+
 using std::tuple;
 
 lv_obj_t *settingPanel;
-
 static lv_coord_t touchY0;
 static lv_coord_t panelY0;
 static bool isDragging;
 
 static const lv_coord_t stickOut = 10;
 
-/**
- * @brief Sets up the setting panel.
- *
- * Creates a panel at the bottom of the screen for the user to toggle settings.
- * The panel is initially hidden and can be dragged up from the bottom of the
- * screen to show it. The panel shows the current WiFi network and battery
- * level, and provides buttons to toggle the WiFi and disable sleep.
- */
-void setupSettingPanel(lv_obj_t *tile) {
-	settingPanel = lv_obj_create(tile);
-	if (!settingPanel) {
-		Serial.println("Failed to create setting panel");
-		return;
-	}
+void setupSettingPanel() {
+	settingPanel = lv_obj_create(lv_scr_act());
 	lv_obj_set_size(settingPanel, LV_PCT(100), LV_PCT(100));
 	lv_obj_set_style_pad_all(settingPanel, 20, LV_PART_MAIN);
 	lv_obj_set_style_border_side(settingPanel, LV_BORDER_SIDE_NONE, LV_PART_MAIN);
@@ -102,7 +89,7 @@ void setupSettingPanel(lv_obj_t *tile) {
 	lv_obj_set_align(arrowLabel, LV_ALIGN_RIGHT_MID);
 	lv_obj_add_flag(arrowLabel, LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_set_ext_click_area(arrowLabel, 6);
-	Serial.println("made shit");
+
 	WiFi.onEvent([=](arduino_event_id_t id, arduino_event_info_t info) {
 		switch (id) {
 			case ARDUINO_EVENT_WIFI_STA_CONNECTED:
@@ -227,6 +214,7 @@ void setupSettingPanel(lv_obj_t *tile) {
 	}, disableSleepBtn);
 
 	lv_obj_add_event_cb(disableSleepBtn, [](lv_event_t *e) {
+		Serial.println("disable sleep");
 		setDisableSleep(!disableSleep);
 	}, LV_EVENT_CLICKED, nullptr);
 }

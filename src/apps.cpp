@@ -1,12 +1,17 @@
 #include <LilyGoLib.h>
 #include "js.h"
 #include <SPIFFS.h>
-
+#include <duktape.h>
 extern lv_obj_t *appsTile;
 static lv_obj_t *list;
 static void loadApps();
+static duk_ret_t js_refapps(duk_context *ctx) {
+	lv_obj_clean(list);
+	loadApps();
+	return 0;
+}
 
-void setupApps()
+void setupApps(duk_context *ctx)
 {
 	list = lv_obj_create(appsTile);
 	lv_obj_set_style_border_side(list, LV_BORDER_SIDE_NONE, LV_PART_MAIN);
@@ -15,6 +20,8 @@ void setupApps()
 	lv_obj_set_flex_flow(list, LV_FLEX_FLOW_ROW_WRAP);
 	lv_obj_align(list, LV_ALIGN_CENTER, 0, 0);
 	loadApps();
+	duk_push_c_function(ctx, js_refapps, 0);
+	duk_put_global_string(ctx, "refapps");
 }
 
 static void createApp(const char *name);
@@ -105,3 +112,4 @@ static void enterAppTile() {
 		}, LV_EVENT_SCROLL_END, appsTile);
 	}, LV_EVENT_SCROLL_END, appTile);
 }
+

@@ -6,10 +6,13 @@
 #include <SPIFFS.h>
 
 duk_context *jsContext;
-
+static void my_fatal(void *udata, const char *msg) {
+	Serial.printf("Duktape Fatal Error: %s\n", msg);
+}
 void setupJs()
 {
-	jsContext = duk_create_heap_default();
+	jsContext = duk_create_heap(NULL, NULL, NULL, NULL, my_fatal);
+
 	duktape_lvgl_install(jsContext);
 	duktape_watch_install(jsContext);
 	duktape_bluewatch_install(jsContext);

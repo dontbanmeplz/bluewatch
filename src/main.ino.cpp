@@ -9,6 +9,13 @@
 #include "webServer_.h"
 #include "filesystem.h"
 #include <SPIFFS.h>
+#include <duktape.h>
+#include "event.h"
+#include "settingPanel.h"
+#include <duktape.h>
+#include "setting.h"
+#include "json.h"
+#include "sensor.h"
 //#include "bluetooth.h"
 
 const char *ntpServer1 = "pool.ntp.org";
@@ -26,29 +33,34 @@ void setup()
         Serial.println("SPIFFS Mount Failed");
     }
 	setupFILESYSTEM();
-	setupUi();
+	Serial.println("setup filesystem done");
 
 	configTime(timezone * 3600, 0, ntpServer1, ntpServer2);
-	WiFi.begin("IU PublicNet", "");
-
+	//WiFi.begin("IU PublicNet", "");
+	setupWifi();
+	Serial.println("setup wifi done");
 	setupJs();
+	Serial.println("setup js done");
+	setupUi(jsContext);
+	Serial.println("setup ui done");
 	setupWebServer();
-	File root = SPIFFS.open("/");
- 
-	File file = root.openNextFile();
-	
-	while(file){
-	
-		Serial.print("FILE: ");
-		Serial.println(file.name());
-	
-		file = root.openNextFile();
-	}
+	Serial.println("setup web done");
+	setupSettingPanel();
+	Serial.println("setup setting done");
+	SetupSensor();
 	//initBluetooth();
 }
 
 void loop()
 {
+	if (sleepMode){
+		uint32_t wakeup_reason = esp_sleep_get_wakeup_cause();
+		if (wakeup_reason == 7) {
+			sleepMode = false;
+			uint32_t now = millis();
+        	lastTouchTime = now;
+		}
+	}
 	lv_task_handler();
 	//if (lv_disp_get_inactive_time(NULL) >= 15000)
 		//enterLightSleep();

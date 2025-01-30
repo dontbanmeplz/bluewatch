@@ -1,7 +1,7 @@
 #include <LilyGoLib.h>
 #include <WiFi.h>
 #include "event.h"
-
+#include "sleep.h"
 lv_obj_t *watchface, *timeLabel, *dateLabel, *statusBar, *batteryLabel, *chargeLabel, *wifiLabel;
 
 unsigned long timeLastUpdateTime;
@@ -10,7 +10,7 @@ void updateTime();
 void updateBatteryStatus();
 void updateChargeStatus();
 void updateWifiStatus();
-
+bool firstTime = true;
 void setupWatchface()
 {
 	extern lv_obj_t *watchfaceTile;
@@ -90,7 +90,12 @@ void updateTime()
 	tm timeinfo;
 	if (!getLocalTime(&timeinfo)) {
 		Serial.println("Failed to obtain time.");
+		setDisableSleep(true);
 		return;
+	}
+	if (firstTime) {
+		firstTime = false;
+		setDisableSleep(false);
 	}
 	char s[16];
 	strftime(s, 16, "%I:%M%p", &timeinfo);
