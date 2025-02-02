@@ -5,7 +5,7 @@
 lv_obj_t *watchface, *timeLabel, *dateLabel, *statusBar, *batteryLabel, *chargeLabel, *wifiLabel;
 
 unsigned long timeLastUpdateTime;
-
+unsigned long timeLastsync;
 void updateTime();
 void updateBatteryStatus();
 void updateChargeStatus();
@@ -78,11 +78,15 @@ void setupWatchface()
 void watchfaceHandler()
 {
 	auto now = millis();
-
+	if (now - timeLastsync >= 3600000 && WiFi.isConnected()) {
+		configTime(-5 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+		timeLastsync = now;
+	}
 	if (now - timeLastUpdateTime >= 500) {
 		updateTime();
 		timeLastUpdateTime = now;
 	}
+	
 }
 
 void updateTime()

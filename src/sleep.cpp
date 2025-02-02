@@ -1,5 +1,5 @@
 #include <LilyGoLib.h>
-
+#include <lvgl.h>
 #include "event.h"
 #include "setting.h"
 #include <LV_Helper.h>
@@ -36,7 +36,7 @@ void sleepHandler() {
 }
 
 void enterLightSleep() {
-	lv_tileview_set_tile_act(tileview, 0,0,LV_ANIM_OFF);
+	lv_obj_set_tile_id(tileview, 0,0,LV_ANIM_OFF);
 	Serial.println("Enter light sleep mode.");
 
 	auto brightness = watch.getBrightness();
@@ -46,8 +46,10 @@ void enterLightSleep() {
 
     watch.configreFeatureInterrupt(
         SensorBMA423::INT_STEP_CNTR |   // Pedometer interrupt
+        SensorBMA423::INT_ACTIVITY |    // Activity interruption
+        SensorBMA423::INT_WAKEUP |      // DoubleTap interrupt
+        SensorBMA423::INT_ANY_NO_MOTION,// Any  motion / no motion interrupt
         false);
-	
 	esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
 	gpio_wakeup_enable((gpio_num_t)BOARD_TOUCH_INT, GPIO_INTR_LOW_LEVEL);
 	gpio_wakeup_enable ((gpio_num_t)BOARD_BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
@@ -56,8 +58,8 @@ void enterLightSleep() {
 	esp_light_sleep_start();
 	watch.configreFeatureInterrupt(
         SensorBMA423::INT_STEP_CNTR |   // Pedometer interrupt
-        SensorBMA423::INT_TILT |        // Tilt interrupt
-        true);	
+        SensorBMA423::INT_TILT,        // Tilt interrupt
+        true);
 	lv_disp_trig_activity(NULL);
 	
 

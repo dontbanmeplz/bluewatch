@@ -1,73 +1,107 @@
-#include <LilyGoLib.h>
-#include <LV_Helper.h>
-#include "ui.h"
-#include "sleep.h"
-#include "battery.h"
-#include "wifi_.h"
-#include "js.h"
-#include "watchface.h"
-#include "webServer_.h"
-#include "filesystem.h"
-#include <SPIFFS.h>
-#include <duktape.h>
-#include "event.h"
-#include "settingPanel.h"
-#include <duktape.h>
-#include "setting.h"
-#include "json.h"
-#include "sensor.h"
-//#include "bluetooth.h"
+#include <Wire.h>
+#include <SPI.h>
+#include <Arduino.h>
+#include "SensorBMA423.hpp"
 
-const char *ntpServer1 = "pool.ntp.org";
-const char *ntpServer2 = "time.nist.gov";
-const int timezone = -5;
+#ifndef SENSOR_SDA
+#define SENSOR_SDA  10
+#endif
 
-SET_LOOP_TASK_STACK_SIZE(16 * 1024);	// Duktape compile may use up default (8K) stack space
+#ifndef SENSOR_SCL
+#define SENSOR_SCL  11
+#endif
+
+#ifndef SENSOR_IRQ
+#define SENSOR_IRQ  14
+#endif
+
+SensorBMA423 accel;
+uint32_t lastMillis;
+bool sensorIRQ = false;
+
+
+void setFlag()
+{
+    sensorIRQ = true;
+}
 
 void setup()
 {
-	Serial.begin(115200);
-	watch.begin();
-	beginLvglHelper();
-	if(!SPIFFS.begin()){
-        Serial.println("SPIFFS Mount Failed");
+    Serial.begin(115200);
+	Serial.println("hi");
+    pinMode(SENSOR_IRQ, INPUT);
+    attachInterrupt(SENSOR_IRQ, setFlag, RISING);
+	Serial.println("bef");
+    if (!accel.begin(Wire, BMA423_SLAVE_ADDRESS, SENSOR_SDA, SENSOR_SCL)) {
+        Serial.println("Failed to find BMA423 - check your wiring!");
+        while (1) {
+            delay(1000);
+        }
     }
-	setupFILESYSTEM();
-	Serial.println("setup filesystem done");
 
-	configTime(timezone * 3600, 0, ntpServer1, ntpServer2);
-	//WiFi.begin("IU PublicNet", "");
-	setupWifi();
-	Serial.println("setup wifi done");
-	setupJs();
-	Serial.println("setup js done");
-	setupUi(jsContext);
-	Serial.println("setup ui done");
-	setupWebServer();
-	Serial.println("setup web done");
-	setupSettingPanel();
-	Serial.println("setup setting done");
-	SetupSensor();
-	//initBluetooth();
+    Serial.println("Init BAM423 Sensor success!");
+
+    //Default 4G ,200HZ
+    accel.configAccelerometer();
+
+    // Enable acceleration sensor
+    accel.enableAccelerometer();
+
+    // Enable pedometer steps
+    accel.enablePedometer();
+
+    // Emptying the pedometer steps
+    accel.resetPedometer();
+
+    // Enable sensor features
+    accel.enableFeature(SensorBMA423::FEATURE_STEP_CNTR |
+                        SensorBMA423::FEATURE_ANY_MOTION |
+                        SensorBMA423::FEATURE_ACTIVITY |
+                        SensorBMA423::FEATURE_TILT |
+                        SensorBMA423::FEATURE_WAKEUP,
+                        true);
+
+    // Pedometer interrupt enable
+    accel.enablePedometerIRQ();
+    // Tilt interrupt enable
+    accel.enableTiltIRQ();
+    // DoubleTap interrupt enable
+    accel.enableWakeupIRQ();
+    // Any  motion / no motion interrupt enable
+    accel.enableAnyNoMotionIRQ();
+    // Activity interruption enable
+    accel.enableActivityIRQ();
+    // Chip interrupt function enable
+    accel.configInterrupt();
+
 }
+
 
 void loop()
 {
-	if (sleepMode){
-		uint32_t wakeup_reason = esp_sleep_get_wakeup_cause();
-		if (wakeup_reason == 7) {
-			sleepMode = false;
-			uint32_t now = millis();
-        	lastTouchTime = now;
-		}
-	}
-	lv_task_handler();
-	//if (lv_disp_get_inactive_time(NULL) >= 15000)
-		//enterLightSleep();
-	sleepHandler();
-	batteryHandler();
-	watchfaceHandler();
-	webServer.handleClient();
+    int16_t x, y, z;
+    if (sensorIRQ) {
+        sensorIRQ = false;
+        // The interrupt status must be read after an interrupt is detected
+        uint16_t status =   accel.readIrqStatus();
+        Serial.printf("Accelerometer interrupt mask : 0x%x\n", status);
 
-	delay(5);
+        if (accel.isPedometer()) {
+            uint32_t stepCounter = accel.getPedometerCounter();
+            Serial.printf("Step count interrupt,step Counter:%u\n", stepCounter);
+        }
+        if (accel.isActivity()) {
+            Serial.println("Activity interrupt");
+        }
+        if (accel.isTilt()) {
+            Serial.println("Tilt interrupt");
+        }
+        if (accel.isDoubleTap()) {
+            Serial.println("DoubleTap interrupt");
+        }
+        if (accel.isAnyNoMotion()) {
+            Serial.println("Any motion / no motion interrupt");
+        }
+    }
+    delay(50);
 }

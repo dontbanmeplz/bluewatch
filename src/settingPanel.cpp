@@ -89,7 +89,13 @@ void setupSettingPanel() {
 	lv_obj_set_align(arrowLabel, LV_ALIGN_RIGHT_MID);
 	lv_obj_add_flag(arrowLabel, LV_OBJ_FLAG_CLICKABLE);
 	lv_obj_set_ext_click_area(arrowLabel, 6);
-
+	if (WiFi.isConnected()) {
+		lv_label_set_text_fmt(wifiLabel, "%s %s", LV_SYMBOL_WIFI, wifiSetting.network.c_str());
+		lv_obj_add_state(wifiBtn, LV_STATE_CHECKED);
+	} else {
+		lv_label_set_text(wifiLabel, LV_SYMBOL_WIFI " Not Connected");
+		lv_obj_clear_state(wifiBtn, LV_STATE_CHECKED);
+	}
 	WiFi.onEvent([=](arduino_event_id_t id, arduino_event_info_t info) {
 		switch (id) {
 			case ARDUINO_EVENT_WIFI_STA_CONNECTED:
