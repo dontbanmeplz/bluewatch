@@ -710,4 +710,5 @@
  .pio/libdeps/twatch-s3/TTGO\ TWatch\ Library/src/utilities.h src/event.h \
  src/setting.h .pio/libdeps/twatch-s3/JavaScript/src/duktape.h \
  .pio/libdeps/twatch-s3/JavaScript/src/duk_config.h src/json.h \
- .pio/libdeps/twatch-s3/TTGO\ TWatch\ Library/src/LV_Helper.h src/ui.h
+ .pio/libdeps/twatch-s3/TTGO\ TWatch\ Library/src/LV_Helper.h src/ui.h \
+ src/sensor.h

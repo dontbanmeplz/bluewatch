@@ -78,7 +78,7 @@ void setupWatchface()
 void watchfaceHandler()
 {
 	auto now = millis();
-	if (now - timeLastsync >= 3600000 && WiFi.isConnected()) {
+	if (now - timeLastsync >= 300000 && WiFi.isConnected()) {
 		configTime(-5 * 3600, 0, "pool.ntp.org", "time.nist.gov");
 		timeLastsync = now;
 	}

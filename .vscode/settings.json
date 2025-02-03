@@ -16,7 +16,8 @@
         "locale": "cpp",
         "bitset": "cpp",
         "ctime": "cpp",
-        "deque": "cpp"
+        "deque": "cpp",
+        "ios": "cpp"
     },
     "search.useIgnoreFiles": false
 }

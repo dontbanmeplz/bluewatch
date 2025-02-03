@@ -822,7 +822,6 @@ private:
         if (id == BMA423_CHIP_ID) {
             return configure();
         }
-
         LOG("ChipID:0x%x should be 0x%x\n", id, BMA423_CHIP_ID);
         return false;
 

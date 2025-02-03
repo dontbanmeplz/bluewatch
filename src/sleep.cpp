@@ -4,6 +4,7 @@
 #include "setting.h"
 #include <LV_Helper.h>
 #include "ui.h"
+#include "sensor.h"
 const uint32_t screenTimeout = 10000;
 bool disableSleep;
 bool sleepMode = false;
@@ -44,23 +45,18 @@ void enterLightSleep() {
 	//wait for touch
 	watch.clearPMU();
 
-    watch.configreFeatureInterrupt(
-        SensorBMA423::INT_STEP_CNTR |   // Pedometer interrupt
-        SensorBMA423::INT_ACTIVITY |    // Activity interruption
-        SensorBMA423::INT_WAKEUP |      // DoubleTap interrupt
-        SensorBMA423::INT_ANY_NO_MOTION,// Any  motion / no motion interrupt
-        false);
+    accel.enableTiltIRQ();
+	accel.disablePedometerIRQ();
 	esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
 	gpio_wakeup_enable((gpio_num_t)BOARD_TOUCH_INT, GPIO_INTR_LOW_LEVEL);
-	gpio_wakeup_enable ((gpio_num_t)BOARD_BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
+	esp_sleep_enable_ext1_wakeup(_BV(14), ESP_EXT1_WAKEUP_ANY_HIGH);
+	//gpio_wakeup_enable ((gpio_num_t)14, GPIO_INTR_HIGH_LEVEL);
 	esp_sleep_enable_gpio_wakeup();
 
 	esp_light_sleep_start();
-	watch.configreFeatureInterrupt(
-        SensorBMA423::INT_STEP_CNTR |   // Pedometer interrupt
-        SensorBMA423::INT_TILT,        // Tilt interrupt
-        true);
-	lv_disp_trig_activity(NULL);
+	Serial.println("wake up");
+	accel.disableTiltIRQ();
+	accel.enablePedometerIRQ();
 	
 
 	watch.incrementalBrightness(brightness);
