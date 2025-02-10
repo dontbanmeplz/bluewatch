@@ -5,6 +5,7 @@
 #include <LV_Helper.h>
 #include "ui.h"
 #include "sensor.h"
+
 const uint32_t screenTimeout = 10000;
 bool disableSleep;
 bool sleepMode = false;
@@ -43,21 +44,20 @@ void enterLightSleep() {
 	auto brightness = watch.getBrightness();
 	watch.decrementBrightness(0);
 	//wait for touch
-	watch.clearPMU();
+	//watch.clearPMU();
 
     accel.enableTiltIRQ();
-	accel.disablePedometerIRQ();
+	//accel.disablePedometerIRQ();
 	esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
 	gpio_wakeup_enable((gpio_num_t)BOARD_TOUCH_INT, GPIO_INTR_LOW_LEVEL);
-	esp_sleep_enable_ext1_wakeup(_BV(14), ESP_EXT1_WAKEUP_ANY_HIGH);
-	//gpio_wakeup_enable ((gpio_num_t)14, GPIO_INTR_HIGH_LEVEL);
+	//esp_sleep_enable_ext1_wakeup(_BV(14), ESP_EXT1_WAKEUP_ANY_HIGH);
+	gpio_wakeup_enable ((gpio_num_t)14, GPIO_INTR_HIGH_LEVEL);
 	esp_sleep_enable_gpio_wakeup();
 
 	esp_light_sleep_start();
 	Serial.println("wake up");
 	accel.disableTiltIRQ();
-	accel.enablePedometerIRQ();
-	
+	//accel.enablePedometerIRQ();
 
 	watch.incrementalBrightness(brightness);
 }

@@ -8,7 +8,7 @@ void setupFILESYSTEM() {
         if (file) {
             size_t fileSize = file.size(); // Get file size
             Serial.printf("File size: %lu bytes\n", fileSize);
-            if (fileSize < 5000) {
+            if (fileSize < 5) {
                 Serial.printf("File %s is empty. Writing data...\n", "settings.json");
                 file.close();
                 File file = SPIFFS.open("/setting.json", FILE_WRITE);

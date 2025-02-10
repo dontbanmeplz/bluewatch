@@ -2,14 +2,13 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Arduino.h>
-
 //######### TESTING ###########
 //https://github.com/lewisxhe/BMA423_Library
 //https://vscode.dev/github/dontbanmeplz/bluewatch-master-2/blob/main/.pio/libdeps/twatch-s3/TTGO%20TWatch%20Library/examples/sleep/WakeupFromSensor/WakeupFromSensor.ino
 //sleep.cc:52
 #ifndef BMA423_SDA
 #define BMA423_SDA  10
-#endif
+#endif  
 
 #ifndef BMA423_SCL
 #define BMA423_SCL  11  
@@ -43,15 +42,15 @@ void setupSensor()
 
     accel.enableAccelerometer();
 
-    accel.enablePedometer();
+    //accel.enablePedometer();
 
     
-    accel.enableFeature(SensorBMA423::FEATURE_STEP_CNTR, true);
+    //accel.enableFeature(SensorBMA423::FEATURE_STEP_CNTR, true);
                         
     accel.enableFeature(SensorBMA423::FEATURE_TILT, true);
 
 
-    accel.enablePedometerIRQ();
+    //accel.enablePedometerIRQ();
     
     accel.configInterrupt();
     
